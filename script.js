@@ -1,4 +1,3 @@
-script.js
 const MISSION =
   "To improve safety using AI-driven detection systems.";
 
