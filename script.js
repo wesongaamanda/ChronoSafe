@@ -7,6 +7,17 @@ const VISION =
 const USER = "admin";
 const PASS = "1234";
 
+/* ========================================================
+   API KEYS — Replace these with your real keys
+   VirusTotal : https://www.virustotal.com/gui/sign-in
+   AbuseIPDB  : https://www.abuseipdb.com/register
+   NewsAPI    : https://newsapi.org/register
+======================================================== */
+const VIRUSTOTAL_KEY = "9c060272f4cb4bea84063b58d2c1e1997728b309bb36e3be5b2bd7568a995da2";
+const ABUSEIPDB_KEY  = "4f6b95b3b734f9ce2d1ff26f512c436460844deb1e8c362e900cf733c4145888cd7d1edf558a3612";
+const NEWS_KEY       = "ecdfb5b18f1e493db81e3d849a33bc07";
+
+
 /* ========= NAVIGATION ========= */
 
 function showSection(id) {
@@ -91,7 +102,11 @@ function initDashboard() {
     document.getElementById("time").textContent = t.toLocaleTimeString();
   }, 1000);
 
-  fetchWeather("dashWeather");
+  //Call all APIs
+    fetchWeather("dashWeather");  //API 1 -Open-Meteo
+    fetchIPInfo("ipBox");                // API 2 — IPInfo
+    fetchSecurityNews("newsBox");          // API 5 — NewsAPI
+}
 }
 
 /* ========= TTC CALC ========= */
