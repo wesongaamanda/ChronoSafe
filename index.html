@@ -5,25 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ChronoSafe</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 </head>
-
 <body>
 
   <!-- NAVBAR -->
   <nav id="mainNav" class="hidden">
-    <div class="logo">ChronoSafe</div>
+    <div class="logo">ChronoSafe </div>
     <div class="links">
-      <li><a href="#home" class="nav-link" onclick="showPage('homePage')">Home</a></li>
-      <li><a href="#features" class="nav-link" onclick="showPage('featuresPage')">Features</a></li>
-      <li><a href="#dashboard" class="nav-link" onclick="showPage('dashboardPage')">Dashboard</a></li>
+      <li><a class="nav-link" onclick="showPage('homePage')">Home</a></li>
+      <li><a class="nav-link" onclick="showPage('featuresPage')">Features</a></li>
+      <li><a class="nav-link" onclick="showPage('dashboardPage')">Dashboard</a></li>
+      <li><a class="nav-link" onclick="showPage('trackingPage')">Tracking</a></li>
       <li><a class="nav-link logout-btn" onclick="logout()">Logout</a></li>
     </div>
   </nav>
 
-  <!-- AUTH WRAPPER -->
-  <div id="authWrapper">
+  <!-- AUTHENTICATION-->
+  <div id="auth">
 
-    <!-- LOGIN PAGE -->
+    <!-- LOGIN -->
     <div id="loginPage" class="auth-page">
       <div class="auth-card">
         <h2>Welcome Back</h2>
@@ -38,7 +39,7 @@
       </div>
     </div>
 
-    <!-- SIGNUP PAGE -->
+    <!-- SIGNUP -->
     <div id="signupPage" class="auth-page hidden">
       <div class="auth-card">
         <h2>Create Account</h2>
@@ -57,34 +58,61 @@
 
   </div>
 
-  <!-- MAIN SITE (shown after login) -->
+  <!-- MAIN SITE -->
   <div id="mainSite" class="hidden">
 
     <!-- HOME -->
     <section id="homePage" class="hero page">
-      <h1>ChronoSafe</h1>
-      <p>Predict. Prevent. Protect.</p>
-      <div style="display:flex;gap:10px;">
-        <button class="btn-primary" onclick="showPage('featuresPage')">Get Started</button>
+      <h1>Predict. Prevent. Protect people at scale.</h1>
+      <p class="hero-sub">
+        ChronoSafe = safety in your hands
+      </p>
+
+      <div class="hero-btns">
+        <button class="btn-primary" onclick="showPage('trackingPage')">Open Tracker</button>
         <button class="btn-ghost" onclick="showPage('featuresPage')">Learn More</button>
+      </div>
+
+      <!-- Mission / Vision cards -->
+      <div class="mv-grid" style="margin-top: 64px; width: 100%;">
+        <div class="mv-card">
+          <div class="mv-card-title">
+          Our Mission
+          </div>
+          <p>To improve public safety using AI-driven detection systems that protect communities, schools, and public spaces — making security seamless and non-intrusive.</p>
+        </div>
+        <div class="mv-card">
+         <div class="mv-card-title"> 
+          Our Vision
+          </div>
+          <p>To build a safer world using smart predictive security tools that are accessible and effective for every organisation — preventing threats before they happen.</p>
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top: 64px;">
+        LAUNCHED 2026 &nbsp;·&nbsp; PRODUCTS BELOW
       </div>
     </section>
 
     <!-- FEATURES -->
     <section id="featuresPage" class="section page hidden">
       <h2>Features</h2>
-      <div class="grid">
-        <div class="card">
+      <div class="features-grid">
+        <div class="feature-card">
           <h3>Prediction</h3>
-          <p>We analyze data to predict risks before they occur.</p>
+          <p>We analyze movement and behavioural data to predict risks before they escalate.</p>
         </div>
-        <div class="card">
+        <div class="feature-card">
           <h3>Prevention</h3>
-          <p>We help stop problems before they happen.</p>
+          <p>Automated alerts and protocols stop problems before they happen.</p>
         </div>
-        <div class="card">
+        <div class="feature-card">
           <h3>Protection</h3>
-          <p>We secure systems and users at every level.</p>
+          <p>We secure systems, infrastructure, and users at every level.</p>
+        </div>
+        <div class="feature-card">
+          <h3>Live Tracking</h3>
+          <p>Real-time GPS movement tracking with full route directions built in.</p>
         </div>
       </div>
     </section>
@@ -92,20 +120,73 @@
     <!-- DASHBOARD -->
     <section id="dashboardPage" class="section page hidden">
       <h2>Dashboard</h2>
-      <p class="welcome-msg">Welcome back, <span id="welcomeName"></span>!</p>
-      <div class="grid" style="margin-top:20px;">
-        <div class="card">
-          <h3>Status</h3>
-          <p>System running normally</p>
+      <p class="dash-welcome">Welcome back, <span id="welcomeName"></span></p>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <h3>System Status</h3>
+          <div class="dash-val">● Online</div>
+          <div class="dash-sub">All systems operational</div>
         </div>
-        <div class="card">
-          <h3>Alerts</h3>
-          <p>No active threats</p>
+        <div class="dash-card">
+          <h3>Active Alerts</h3>
+          <div class="dash-val">0</div>
+          <div class="dash-sub">No active threats detected</div>
         </div>
-        <div class="card">
+        <div class="dash-card">
           <h3>Uptime</h3>
-          <p>99.98% this month</p>
+          <div class="dash-val">99.98%</div>
+          <div class="dash-sub">This month</div>
         </div>
+        <div class="dash-card">
+          <h3>Tracked Routes</h3>
+          <div class="dash-val" id="routeCount">0</div>
+          <div class="dash-sub">Routes generated this session</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TRACKING -->
+    <section id="trackingPage" class="page hidden">
+      <div class="tracking-layout">
+
+        <div class="tracking-panel">
+          <h2>Live Tracker</h2>
+          <p class="subtitle" style="text-align:left;">Track your location and get directions</p>
+
+          <div class="panel-block">
+            <h4>My Location</h4>
+            <p id="coordsDisplay" class="coords-text">Not tracking yet</p>
+            <p id="accuracyDisplay" class="coords-sub"></p>
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <button class="btn-primary full" onclick="startTracking()">Start Tracking</button>
+              <button class="btn-ghost full" onclick="stopTracking()">Stop</button>
+            </div>
+          </div>
+
+          <div class="panel-block">
+            <h4>Get Directions</h4>
+            <input type="text" id="originInput" placeholder="From (e.g. Nairobi CBD)" />
+            <input type="text" id="destInput" placeholder="To (e.g. Westlands)" style="margin-top:8px;" />
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <button class="btn-primary full" onclick="getDirections()">Get Route</button>
+              <button class="btn-ghost full" onclick="useMyLocation()">Use My Location</button>
+            </div>
+            <div id="routeError" class="error-msg hidden" style="margin-top:10px;"></div>
+          </div>
+
+          <div class="panel-block" id="routeInfoBlock" style="display:none;">
+            <h4>Route Info</h4>
+            <div class="route-stat"><span>Distance</span><strong id="routeDistance">—</strong></div>
+            <div class="route-stat"><span>Est. Duration</span><strong id="routeDuration">—</strong></div>
+          </div>
+
+          <div class="panel-block" id="stepsBlock" style="display:none;">
+            <h4>Turn-by-Turn</h4>
+            <ol id="stepsList" class="steps-list"></ol>
+          </div>
+        </div>
+
+        <div id="map"></div>
       </div>
     </section>
 
@@ -113,9 +194,10 @@
 
   <!-- FOOTER -->
   <footer id="mainFooter" class="hidden">
-    <p>© 2026 ChronoSafe. All rights reserved.</p>
+    <p> &copy; 2026 CHRONOSAFE. ALL RIGHTS RESERVED.</p>
   </footer>
 
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
