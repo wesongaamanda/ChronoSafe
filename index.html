@@ -9,251 +9,113 @@
 
 <body>
 
-
-
   <!-- NAVBAR -->
-  <nav>
+  <nav id="mainNav" class="hidden">
     <div class="logo">ChronoSafe</div>
-
-     
-    <div class="search">
-            <nav class="navbar bg-body-tertiary">
-                <div class="container-fluid">
-                  <form class="d-flex" role="search">
-                    <input id="search-input" class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-                  </form>
-                </div>
-              </nav>
+    <div class="links">
+      <li><a href="#home" class="nav-link" onclick="showPage('homePage')">Home</a></li>
+      <li><a href="#features" class="nav-link" onclick="showPage('featuresPage')">Features</a></li>
+      <li><a href="#dashboard" class="nav-link" onclick="showPage('dashboardPage')">Dashboard</a></li>
+      <li><a class="nav-link logout-btn" onclick="logout()">Logout</a></li>
     </div>
+  </nav>
 
-    <div class="links" id="navLinks"> 
-     <li><a href="#home" class="nav-link">Home</a></li>
-     <li><a href="#features" class="nav-link">Features</a></li>
-     <li><a href="#dashboard" class="nav-link">Dashboard</a></li>
-     <li><a href="#login" class="nav-link">Login</a></li>
-     <li><a href="#sign up" class="nav-link">Sign up</a></li>
-    </div>   
-    <button id="menuToggle">☰</button>
- </nav>
+  <!-- AUTH WRAPPER -->
+  <div id="authWrapper">
 
-
-
-  <!-- HOME PAGE -->
-   <div id="home" class="page active">
-
-
-
-  <!-- HERO -->
-  <section class="hero">
-    <h1>ChronoSafe</h1>
-    <p>Predict. Prevent. Protect.</p>
-
-    <div>
-      <button class="btn-primary">Get Started</button>
-      <button class="btn-ghost">Learn More</button>
-    </div>
-  </section>
-
-
-
-  <!-- MISSION & VISION -->
-   <section class="section">
-    <div class="grid">
-      <div class="card">
-        <h3>🎯 Mission</h3>
-        <p id="missionText"></p>
-      </div>
-      <div class="card">
-        <h3>🔭 Vision</h3>
-        <p id="visionText"></p>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="auth-page">
+      <div class="auth-card">
+        <h2>Welcome Back</h2>
+        <p class="subtitle">Log in to your ChronoSafe account</p>
+        <div id="loginError" class="error-msg hidden"></div>
+        <input type="text" id="loginUsername" placeholder="Username" />
+        <input type="password" id="loginPassword" placeholder="Password" />
+        <button class="btn-primary full" onclick="login()">Log In</button>
+        <div class="divider"><span>OR</span></div>
+        <button class="social-btn" onclick="googleAuth()">Continue with Google</button>
+        <p class="switch-text">Don't have an account? <a onclick="switchTo('signupPage')">Sign up</a></p>
       </div>
     </div>
-   </section>
 
+    <!-- SIGNUP PAGE -->
+    <div id="signupPage" class="auth-page hidden">
+      <div class="auth-card">
+        <h2>Create Account</h2>
+        <p class="subtitle">Sign up to get started</p>
+        <div id="signupError" class="error-msg hidden"></div>
+        <input type="text" id="signupUsername" placeholder="Username" />
+        <input type="email" id="signupEmail" placeholder="Email" />
+        <input type="password" id="signupPassword" placeholder="Password" />
+        <input type="password" id="signupConfirm" placeholder="Confirm Password" />
+        <button class="btn-primary full" onclick="signup()">Sign Up</button>
+        <div class="divider"><span>OR</span></div>
+        <button class="social-btn" onclick="googleAuth()">Continue with Google</button>
+        <p class="switch-text">Already have an account? <a onclick="switchTo('loginPage')">Log in</a></p>
+      </div>
+    </div>
 
+  </div>
 
-   <!-- WEATHER ON HOME-->
-    <section class="section">
-      <div class="card" id="weatherBox">Loading weather...</div>
+  <!-- MAIN SITE (shown after login) -->
+  <div id="mainSite" class="hidden">
+
+    <!-- HOME -->
+    <section id="homePage" class="hero page">
+      <h1>ChronoSafe</h1>
+      <p>Predict. Prevent. Protect.</p>
+      <div style="display:flex;gap:10px;">
+        <button class="btn-primary" onclick="showPage('featuresPage')">Get Started</button>
+        <button class="btn-ghost" onclick="showPage('featuresPage')">Learn More</button>
+      </div>
     </section>
 
-  <!-- FEATURES -->
-  <section id="features" class="section">
-    <h2>Features</h2>
-
-    <div class="grid">
-      <div class="card">
-        <h3>Prediction</h3>
-        <p>We analyze data to predict risks.</p>
-      </div>
-
-      <div class="card">
-        <h3>Prevention</h3>
-        <p>We help stop problems before they happen.</p>
-      </div>
-
-      <div class="card">
-        <h3>Protection</h3>
-        <p>We secure systems and users.</p>
-      </div>
-    </div>
-  </section>
-
-
-<!-- LOGIN PAGE -->
-   <div id="login" class="page">
-    <section class="section">
-      <div class="signup-container">
-        <div class="signup-card">
-          <h2 class="logo" style="font-size:24px;">ChronoSafe</h2>
-          <p class="subtitle">Login to your account</p>
-          <form id="loginForm">
-            <input type="text" id="username" placeholder="Username" required />
-            <input type="password" id="password" placeholder="Password" required />
-            <p id="error" class="hidden" style="color:red; font-size:13px;"></p>
-            <button type="submit" class="btn-primary" style="width:100%">Login</button>
-          </form>
+    <!-- FEATURES -->
+    <section id="featuresPage" class="section page hidden">
+      <h2>Features</h2>
+      <div class="grid">
+        <div class="card">
+          <h3>Prediction</h3>
+          <p>We analyze data to predict risks before they occur.</p>
+        </div>
+        <div class="card">
+          <h3>Prevention</h3>
+          <p>We help stop problems before they happen.</p>
+        </div>
+        <div class="card">
+          <h3>Protection</h3>
+          <p>We secure systems and users at every level.</p>
         </div>
       </div>
     </section>
-  </div>
 
-
-
-  <!-- DASHBOARD -->
-  <section id="dashboard" class="dashboard">
-
-
-
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-      <h3>Menu</h3>
-      <p>Overview</p>
-      <p>Stats</p>
-      <p>Reports</p>
-    </aside>
-
-
-
-    <!-- MAIN CONTENT -->
-    <main class="main">
+    <!-- DASHBOARD -->
+    <section id="dashboardPage" class="section page hidden">
       <h2>Dashboard</h2>
-      <p>Welcome, <strong id="user"></strong> &nbsp;|&nbsp; <span id="time"></span></p>
-
-
-
-    <!-- STATUS CARDS -->  
-      <div class="grid">
+      <p class="welcome-msg">Welcome back, <span id="welcomeName"></span>!</p>
+      <div class="grid" style="margin-top:20px;">
         <div class="card">
           <h3>Status</h3>
           <p>System running normally</p>
         </div>
-
         <div class="card">
           <h3>Alerts</h3>
           <p>No active threats</p>
         </div>
-      </div>
-
-    <!-- API -->
-     <!-- ===== API 1: OPEN-METRO - Weather ===== -->
-        <div class="card" id="dashWeather" style="margin-top:15px;">
-          Loading weather...
+        <div class="card">
+          <h3>Uptime</h3>
+          <p>99.98% this month</p>
         </div>
-
-    <!-- ===== API 2 : IPINFO - User IP & Location ===== -->
-        <div class="card" id="ipBox" style="margin-top:15px;">
-          Loading IP info...
-        </div>  
-
-    <!-- ===== API 3 : VIRUSTOTAL - URL Scanner ===== -->
-      <div class="card" style="margin-top:15px;">
-          <h3>🔍 VirusTotal — URL Scanner</h3>
-          <input
-            type="text"
-            id="urlInput"
-            placeholder="Enter a URL to scan e.g. https://example.com"
-            style="width:100%; padding:8px; margin:10px 0; background:#0c0f1a; color:#fff; border:1px solid #2d3748; border-radius:6px;"
-          />
-          <button class="btn-primary" id="scanBtn">Scan URL</button>
-          <div id="virusTotalBox" style="margin-top:10px;"></div>
       </div>
-      
-    <!-- ===== API 4: ABUSEIPDB - IP Reputation Checker ===== -->
-      <div class="card" style="margin-top:15px;">
-          <h3>🛡️ AbuseIPDB — IP Checker</h3>
-          <input
-            type="text"
-            id="ipInput"
-            placeholder="Enter an IP address e.g. 8.8.8.8"
-            style="width:100%; padding:8px; margin:10px 0; background:#0c0f1a; color:#fff; border:1px solid #2d3748; border-radius:6px;"
-          />
-          <button class="btn-primary" id="abuseBtn">Check IP</button>
-          <div id="abuseBox" style="margin-top:10px;"></div>
-      </div> 
+    </section>
 
-    <!-- ===== API 5: NEWSAPI - Cybersecurity News ===== -->
-      <div class="card" id="newsBox" style="margin-top:15px;">
-          Loading security news...
-      </div>
-
-
-
-  <!-- TTC CALCULATOR -->
-        <div class="card" style="margin-top:15px;">
-          <h3>⏱️ TTC Calculator</h3>
-          <input type="number" id="speedInput" placeholder="Speed (m/s)"
-            style="width:100%; padding:8px; margin:5px 0; background:#0c0f1a; color:#fff; border:1px solid #2d3748; border-radius:6px;"/>
-          <input type="number" id="distanceInput" placeholder="Distance (m)"
-            style="width:100%; padding:8px; margin:5px 0; background:#0c0f1a; color:#fff; border:1px solid #2d3748; border-radius:6px;"/>
-          <button class="btn-primary" id="ttcBtn">Calculate</button>
-          <p id="ttcOutput" style="margin-top:10px; color: var(--accent);"></p>
-        </div>
- 
-    </main>
-  </section>
   </div>
 
-
-   <!--SIGN UP -->
-   <div id="signup" class="page">
-    <section class="section">
-     <div class="signup-container">
-    
-       <div class="signup-card">
-      
-         <p class="subtitle">Sign up to connect with friends</p>
-
-        <form>
-           <input type="text" placeholder="Username" required>
-           <input type="email" placeholder="Email" required>
-           <input type="password" placeholder="Password" required>
-           <input type="password" placeholder="Confirm Password" required>
-
-          <button type="submit">Sign Up</button>
-        </form>
-
-        <div class="divider">
-            <span>OR</span>
-        </div>
-
-        <button class="social-btn">Continue with Google</button>
-
-        <p class="login-text">
-        Already have an account? <a href="#" id="goLogin">Login</a>
-        </p>
-
-       </div>
-
-     </div>
-    </section>
-   </div>
-
-
-   <!-- FOOTER -->
-  <footer>
+  <!-- FOOTER -->
+  <footer id="mainFooter" class="hidden">
     <p>© 2026 ChronoSafe. All rights reserved.</p>
   </footer>
 
+  <script src="script.js"></script>
 </body>
 </html>

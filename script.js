@@ -1,214 +1,170 @@
-const MISSION =
-  "To improve safety using AI-driven detection systems.";
+/* ========= STORAGE HELPERS ========= */
 
-const VISION =
-  "To build a safer world using smart predictive security tools.";
+function getUsers() {
+  return JSON.parse(localStorage.getItem("cs_users") || "{}");
+}
 
-const USER = "admin";
-const PASS = "1234";
+function saveUsers(users) {
+  localStorage.setItem("cs_users", JSON.stringify(users));
+}
 
-/* ========================================================
-   API KEYS — Replace these with your real keys
-   VirusTotal : https://www.virustotal.com/gui/sign-in
-   AbuseIPDB  : https://www.abuseipdb.com/register
-   NewsAPI    : https://newsapi.org/register
-======================================================== */
-const VIRUSTOTAL_KEY = "9c060272f4cb4bea84063b58d2c1e1997728b309bb36e3be5b2bd7568a995da2";
-const ABUSEIPDB_KEY  = "4f6b95b3b734f9ce2d1ff26f512c436460844deb1e8c362e900cf733c4145888cd7d1edf558a3612";
-const NEWS_KEY       = "ecdfb5b18f1e493db81e3d849a33bc07";
+function setSession(username) {
+  localStorage.setItem("cs_session", username);
+}
 
+function getSession() {
+  return localStorage.getItem("cs_session");
+}
 
-/* ========= NAVIGATION ========= */
+function clearSession() {
+  localStorage.removeItem("cs_session");
+}
 
-function showSection(id) {
-  document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+/* ========= PAGE SWITCHING ========= */
 
-  const page = document.getElementById(id);
-  if (page) page.classList.add("active");
+function showPage(pageId) {
+  document.querySelectorAll(".page").forEach(p => p.classList.add("hidden"));
+  document.getElementById(pageId)?.classList.remove("hidden");
+}
 
-  if (id === "home") initHome();
-  if (id === "dashboard") initDashboard();
+function switchTo(authPageId) {
+  document.querySelectorAll(".auth-page").forEach(p => p.classList.add("hidden"));
+  document.getElementById(authPageId)?.classList.remove("hidden");
+  clearErrors();
+}
 
-  document.getElementById("navLinks")?.classList.remove("open");
+function showSite() {
+  document.getElementById("authWrapper").classList.add("hidden");
+  document.getElementById("mainSite").classList.remove("hidden");
+  document.getElementById("mainNav").classList.remove("hidden");
+  document.getElementById("mainFooter").classList.remove("hidden");
+  document.getElementById("welcomeName").textContent = getSession();
+  showPage("homePage");
+}
+
+function showAuth() {
+  document.getElementById("authWrapper").classList.remove("hidden");
+  document.getElementById("mainSite").classList.add("hidden");
+  document.getElementById("mainNav").classList.add("hidden");
+  document.getElementById("mainFooter").classList.add("hidden");
+  switchTo("loginPage");
+}
+
+/* ========= ERROR HELPERS ========= */
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove("hidden");
+}
+
+function clearErrors() {
+  document.querySelectorAll(".error-msg").forEach(e => {
+    e.textContent = "";
+    e.classList.add("hidden");
+  });
 }
 
 /* ========= AUTH ========= */
 
-function isLoggedIn() {
-  return localStorage.getItem("login") === "true";
-}
-
 function login() {
-  const u = document.getElementById("username").value;
-  const p = document.getElementById("password").value;
-  const err = document.getElementById("error");
+  clearErrors();
+  const username = document.getElementById("loginUsername").value.trim();
+  const password = document.getElementById("loginPassword").value;
 
-  if (!u || !p) {
-    err.textContent = "Fill all fields";
-    err.classList.remove("hidden");
+  if (!username || !password) {
+    showError("loginError", "Please fill in all fields.");
     return;
   }
 
-  if (u === USER && p === PASS) {
-    localStorage.setItem("login", "true");
-    localStorage.setItem("user", u);
-    showSection("dashboard");
-    updateNav();
-  } else {
-    err.textContent = "Wrong credentials";
-    err.classList.remove("hidden");
+  const users = getUsers();
+
+  if (!users[username]) {
+    showError("loginError", "Account not found. Please sign up first.");
+    return;
   }
-}
 
-function logout() {
-  localStorage.clear();
-  showSection("home");
-  updateNav();
-}
-
-function updateNav() {
-  const loginBtn = document.getElementById("loginBtn");
-  const dashBtn = document.getElementById("dashBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-
-  if (isLoggedIn()) {
-    loginBtn?.classList.add("hidden");
-    dashBtn?.classList.remove("hidden");
-    logoutBtn?.classList.remove("hidden");
-  } else {
-    loginBtn?.classList.remove("hidden");
-    dashBtn?.classList.add("hidden");
-    logoutBtn?.classList.add("hidden");
+  if (users[username].password !== password) {
+    showError("loginError", "Incorrect password. Please try again.");
+    return;
   }
+
+  setSession(username);
+  showSite();
 }
 
-/* ========= HOME ========= */
-
-function initHome() {
-  document.getElementById("missionText").textContent = MISSION;
-  document.getElementById("visionText").textContent = VISION;
-
-  fetchWeather("weatherBox");
-}
-
-/* ========= DASHBOARD ========= */
-
-function initDashboard() {
-  document.getElementById("user").textContent =
-    localStorage.getItem("user") || "Admin";
-
-  setInterval(() => {
-    const t = new Date();
-    document.getElementById("time").textContent = t.toLocaleTimeString();
-  }, 1000);
-
-  //Call all APIs
-    fetchWeather("dashWeather");  //API 1 -Open-Meteo
-    fetchIPInfo("ipBox");                // API 2 — IPInfo
-    fetchSecurityNews("newsBox");          // API 5 — NewsAPI
-}
-}
-
-/* ========= TTC CALC ========= */
-
-function calcTTC(speedId, distId, outId) {
-  const s = parseFloat(document.getElementById(speedId).value);
-  const d = parseFloat(document.getElementById(distId).value);
-
-  if (!s || !d) return alert("Invalid input");
-
-  const ttc = d / s;
-
-  document.getElementById(outId).textContent =
-    `TTC: ${ttc.toFixed(2)}s`;
-}
-
-/* ========= WEATHER ========= */
-
-async function fetchWeather(id) {
-  const box = document.getElementById(id);
-  if (!box) return;
-
-  box.innerHTML = "Loading...";
-
-  try {
-    const res = await fetch(
-      "https://api.open-meteo.com/v1/forecast?latitude=-1.29&longitude=36.82&current=temperature_2m,wind_speed_10m,relative_humidity_2m"
-    );
-
-    const data = await res.json();
-    const c = data.current;
-
-    box.innerHTML = `
-      <p>Temp: ${c.temperature_2m}°C</p>
-      <p>Wind: ${c.wind_speed_10m} m/s</p>
-      <p>Humidity: ${c.relative_humidity_2m}%</p>
-    `;
-  } catch {
-    box.innerHTML = "Weather failed to load";
-  }
-}
-
-/* ========= EVENT LISTENERS ========= */
-
-document.addEventListener("DOMContentLoaded", () => {
-
-  // Initial setup
-  updateNav();
-  initHome();
-
-  // Navigation
-  document.getElementById("homeBtn")?.addEventListener("click", () => showSection("home"));
-  document.getElementById("loginBtn")?.addEventListener("click", () => showSection("login"));
-  document.getElementById("dashBtn")?.addEventListener("click", () => showSection("dashboard"));
-  document.getElementById("logoutBtn")?.addEventListener("click", logout);
-
-  // Login form
-  document.getElementById("loginForm")?.addEventListener("submit", (e) => {
-    e.preventDefault();
-    login();
-  });
-
-  // Optional: allow Enter key to login
-  document.getElementById("password")?.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") login();
-  });
-
-  // TTC button
-  document.getElementById("ttcBtn")?.addEventListener("click", () => {
-    calcTTC("speedInput", "distanceInput", "ttcOutput");
-  });
-
-  // Mobile menu toggle
-  document.getElementById("menuToggle")?.addEventListener("click", () => {
-    document.getElementById("navLinks")?.classList.toggle("open");
-  });
-
-});
-document.querySelector("form")?.addEventListener("submit", (e) => {
-  e.preventDefault();
-
-  const inputs = document.querySelectorAll("form input");
-  const username = inputs[0].value;
-  const email = inputs[1].value;
-  const password = inputs[2].value;
-  const confirm = inputs[3].value;
+function signup() {
+  clearErrors();
+  const username = document.getElementById("signupUsername").value.trim();
+  const email    = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value;
+  const confirm  = document.getElementById("signupConfirm").value;
 
   if (!username || !email || !password || !confirm) {
-    alert("Please fill all fields");
+    showError("signupError", "Please fill in all fields.");
+    return;
+  }
+
+  if (password.length < 6) {
+    showError("signupError", "Password must be at least 6 characters.");
     return;
   }
 
   if (password !== confirm) {
-    alert("Passwords do not match");
+    showError("signupError", "Passwords do not match.");
     return;
   }
 
-  // Save user (simple version)
-  localStorage.setItem("user", username);
+  const users = getUsers();
 
-  alert("Account created successfully!");
+  if (users[username]) {
+    showError("signupError", "Username already taken. Please choose another.");
+    return;
+  }
 
-  // Optional: redirect
-  // window.location.href = "login.html";
+  users[username] = { email, password };
+  saveUsers(users);
+  setSession(username);
+  showSite();
+}
+
+function logout() {
+  clearSession();
+  showAuth();
+}
+
+/* ========= GOOGLE AUTH (SIMULATED) ========= */
+
+function googleAuth() {
+  const mockName = "GoogleUser_" + Math.floor(Math.random() * 9000 + 1000);
+  const users = getUsers();
+
+  if (!users[mockName]) {
+    users[mockName] = { email: mockName + "@gmail.com", password: "" };
+    saveUsers(users);
+  }
+
+  setSession(mockName);
+  showSite();
+}
+
+/* ========= INIT ========= */
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (getSession()) {
+    showSite();
+  } else {
+    showAuth();
+  }
+
+  // Allow Enter key on login
+  document.getElementById("loginPassword")?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") login();
+  });
+
+  // Allow Enter key on signup
+  document.getElementById("signupConfirm")?.addEventListener("keypress", (e) => {
+    if (e.key === "Enter") signup();
+  });
 });
